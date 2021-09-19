@@ -13,7 +13,6 @@
 		led-failsafe = &led_power;
 		led-running = &led_power;
 		led-upgrade = &led_power;
-		label-mac-device = &eth1;
 	};
 
 	led_spi {
@@ -117,10 +116,6 @@
 	};
 };
 
-&uart {
-	status = "okay";
-};
-
 &pcie {
 	status = "okay";
 };
@@ -129,9 +124,6 @@
 	status = "okay";
 
 	phy-handle = <&swphy0>;
-
-	mtd-mac-address = <&info 0x8>;
-	mtd-mac-address-increment = <1>;
 
 	gmac-config {
 		device = <&gmac>;
@@ -143,13 +135,8 @@
 
 &eth1 {
 	status = "okay";
-
-	mtd-mac-address = <&info 0x8>;
 };
 
 &wmac {
 	status = "okay";
-
-	mtd-cal-data = <&art 0x1000>;
-	mtd-mac-address = <&info 0x8>;
 };

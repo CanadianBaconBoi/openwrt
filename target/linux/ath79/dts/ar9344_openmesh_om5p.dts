@@ -14,7 +14,6 @@
 	};
 
 	aliases {
-		serial0 = &uart;
 		led-boot = &led_power_blue;
 		led-failsafe = &led_power_blue;
 		led-running = &led_power_blue;
@@ -85,10 +84,6 @@
 	clock-frequency = <40000000>;
 };
 
-&uart {
-	status = "okay";
-};
-
 &pinmux {
 	led_lan_wan_blue_pin: pinmux_lan_wan_blue_pin {
 		pinctrl-single,bits = <0xc 0x0 0xffff0000>;
@@ -150,17 +145,33 @@
 
 	phy-handle = <&swphy4>;
 
-	mtd-mac-address = <&art 0x6>;
+	nvmem-cells = <&macaddr_art_6>;
+	nvmem-cell-names = "mac-address";
 };
 
 &eth1 {
 	status = "okay";
 
-	mtd-mac-address = <&art 0x0>;
+	nvmem-cells = <&macaddr_art_0>;
+	nvmem-cell-names = "mac-address";
 };
 
 &wmac {
 	status = "okay";
 
 	mtd-cal-data = <&art 0x1000>;
+};
+
+&art {
+	compatible = "nvmem-cells";
+	#address-cells = <1>;
+	#size-cells = <1>;
+
+	macaddr_art_0: macaddr@0 {
+		reg = <0x0 0x6>;
+	};
+
+	macaddr_art_6: macaddr@6 {
+		reg = <0x6 0x6>;
+	};
 };

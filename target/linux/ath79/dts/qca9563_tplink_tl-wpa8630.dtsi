@@ -102,10 +102,6 @@
 	status = "okay";
 };
 
-&uart {
-	status = "okay";
-};
-
 &mdio0 {
 	status = "okay";
 
@@ -132,6 +128,4 @@
 
 &wmac {
 	status = "okay";
-
-	mtd-cal-data = <&art 0x1000>;
 };

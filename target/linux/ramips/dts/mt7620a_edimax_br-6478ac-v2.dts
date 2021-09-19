@@ -1,14 +1,8 @@
+// SPDX-License-Identifier: GPL-2.0-only
 /*
- * Device Tree file for the Edimax BR-6478AC V2
- * based on Linksys E1700
- *
  * Copyright (C) 2016 Rohan Murch <rohan.murch@gmail.com>
  * Copyright (C) 2016 Hans Ulli Kroll <ulli.kroll@googlemail.com>
  * Copyright (C) 2017 James McKenzie <openwrt@madingley.org>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2.  This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
  */
 
 #include "mt7620a.dtsi"
@@ -138,7 +132,8 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&rgmii1_pins &rgmii2_pins &mdio_pins>;
 
-	mtd-mac-address = <&factory 0x4>;
+	nvmem-cells = <&macaddr_factory_4>;
+	nvmem-cell-names = "mac-address";
 
 	mediatek,portmap = "wllll";
 
@@ -184,7 +179,7 @@
 };
 
 &gsw {
-	mediatek,port4 = "gmac";
+	mediatek,ephy-base = /bits/ 8 <12>;
 };
 
 &wmac {
@@ -209,4 +204,14 @@
 
 &ohci {
 	status = "okay";
+};
+
+&factory {
+	compatible = "nvmem-cells";
+	#address-cells = <1>;
+	#size-cells = <1>;
+
+	macaddr_factory_4: macaddr@4 {
+		reg = <0x4 0x6>;
+	};
 };

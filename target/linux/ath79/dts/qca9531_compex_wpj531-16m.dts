@@ -60,10 +60,6 @@
 	};
 };
 
-&uart {
-	status = "okay";
-};
-
 &pinmux {
 	pinmux_led_eth_pins: pinmux_led_eth_pins {
 		pinctrl-single,bits = <0x8 0x2b000000 0xff000000>, <0xc 0x00002d00 0x0000ff00>;
@@ -109,11 +105,13 @@
 
 	phy-handle = <&swphy4>;
 
-	mtd-mac-address = <&uboot 0x2e010>;
+	nvmem-cells = <&macaddr_uboot_2e010>;
+	nvmem-cell-names = "mac-address";
 };
 
 &eth1 {
-	mtd-mac-address = <&uboot 0x2e018>;
+	nvmem-cells = <&macaddr_uboot_2e018>;
+	nvmem-cell-names = "mac-address";
 };
 
 &wmac {
@@ -137,4 +135,18 @@
 
 &usb0 {
 	status = "okay";
+};
+
+&uboot {
+	compatible = "nvmem-cells";
+	#address-cells = <1>;
+	#size-cells = <1>;
+
+	macaddr_uboot_2e010: macaddr@2e010 {
+		reg = <0x2e010 0x6>;
+	};
+
+	macaddr_uboot_2e018: macaddr@2e018 {
+		reg = <0x2e018 0x6>;
+	};
 };

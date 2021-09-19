@@ -10,7 +10,6 @@
 	compatible = "pqi,air-pen", "qca,ar9330";
 
 	aliases {
-		serial0 = &uart;
 		led-boot = &led_wlan;
 		led-failsafe = &led_wlan;
 		led-upgrade = &led_wlan;
@@ -48,10 +47,6 @@
 			debounce-interval = <60>;
 		};
 	};
-};
-
-&uart {
-	status = "okay";
 };
 
 &usb {
@@ -117,7 +112,8 @@
 &eth0 {
 	status = "okay";
 
-	mtd-mac-address = <&art 0x1002>;
+	nvmem-cells = <&macaddr_art_1002>;
+	nvmem-cell-names = "mac-address";
 
 	gmac-config {
 		device = <&gmac>;
@@ -137,5 +133,20 @@
 	status = "okay";
 
 	mtd-cal-data = <&art 0x1000>;
-	mtd-mac-address = <&art 0x2>;
+	nvmem-cells = <&macaddr_art_2>;
+	nvmem-cell-names = "mac-address";
+};
+
+&art {
+	compatible = "nvmem-cells";
+	#address-cells = <1>;
+	#size-cells = <1>;
+
+	macaddr_art_2: macaddr@2 {
+		reg = <0x2 0x6>;
+	};
+
+	macaddr_art_1002: macaddr@1002 {
+		reg = <0x1002 0x6>;
+	};
 };

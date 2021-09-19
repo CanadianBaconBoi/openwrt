@@ -11,7 +11,6 @@
 		led-boot = &led_vpn;
 		led-failsafe = &led_vpn;
 		led-upgrade = &led_vpn;
-		serial0 = &uart;
 	};
 
 	keys {
@@ -56,7 +55,8 @@
 &eth0 {
 	status = "okay";
 
-	mtd-mac-address = <&art 0x0>;
+	nvmem-cells = <&macaddr_art_0>;
+	nvmem-cell-names = "mac-address";
 
 	gmac-config {
 		device = <&gmac>;
@@ -111,10 +111,6 @@
 	};
 };
 
-&uart {
-	status = "okay";
-};
-
 &usb {
 	status = "okay";
 };
@@ -127,4 +123,14 @@
 	status = "okay";
 
 	mtd-cal-data = <&art 0x1000>;
+};
+
+&art {
+	compatible = "nvmem-cells";
+	#address-cells = <1>;
+	#size-cells = <1>;
+
+	macaddr_art_0: macaddr@0 {
+		reg = <0x0 0x6>;
+	};
 };

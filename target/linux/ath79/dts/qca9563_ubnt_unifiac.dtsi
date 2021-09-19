@@ -39,10 +39,6 @@
 	};
 };
 
-&uart {
-	status = "okay";
-};
-
 &pcie {
 	status = "okay";
 };
@@ -108,4 +104,14 @@
 	status = "okay";
 
 	mtd-cal-data = <&art 0x1000>;
+};
+
+&art {
+	compatible = "nvmem-cells";
+	#address-cells = <1>;
+	#size-cells = <1>;
+
+	macaddr_art_0: macaddr@0 {
+		reg = <0x0 0x6>;
+	};
 };

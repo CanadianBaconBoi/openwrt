@@ -6,6 +6,21 @@ include ./common-tp-link.mk
 
 DEFAULT_SOC := mt7628an
 
+define Build/elecom-header
+	$(eval model_id=$(1))
+	( \
+		fw_size="$$(printf '%08x' $$(stat -c%s $@))"; \
+		echo -ne "$$(echo "031d6129$${fw_size}06000000$(model_id)" | \
+			sed 's/../\\x&/g')"; \
+		dd if=/dev/zero bs=92 count=1; \
+		data_crc="$$(dd if=$@ | gzip -c | tail -c 8 | \
+			od -An -N4 -tx4 --endian little | tr -d ' \n')"; \
+		echo -ne "$$(echo "$${data_crc}00000000" | sed 's/../\\x&/g')"; \
+		dd if=$@; \
+	) > $@.new
+	mv $@.new $@
+endef
+
 define Build/ravpower-wd009-factory
 	mkimage -A mips -T standalone -C none -a 0x80010000 -e 0x80010000 \
 		-n "OpenWrt Bootloader" -d $(UBOOT_PATH) $@.new
@@ -19,6 +34,7 @@ define Device/alfa-network_awusfree1
   DEVICE_VENDOR := ALFA Network
   DEVICE_MODEL := AWUSFREE1
   DEVICE_PACKAGES := uboot-envtools
+  SUPPORTED_DEVICES += awusfree1
 endef
 TARGET_DEVICES += alfa-network_awusfree1
 
@@ -84,6 +100,13 @@ define Device/d-team_pbr-d1
 endef
 TARGET_DEVICES += d-team_pbr-d1
 
+define Device/dlink_dap-1325-a1
+  IMAGE_SIZE := 7872k
+  DEVICE_VENDOR := D-Link
+  DEVICE_MODEL := DAP-1325 A1
+endef
+TARGET_DEVICES += dlink_dap-1325-a1
+
 define Device/duzun_dm06
   IMAGE_SIZE := 7872k
   DEVICE_VENDOR := DuZun
@@ -92,6 +115,18 @@ define Device/duzun_dm06
   SUPPORTED_DEVICES += duzun-dm06
 endef
 TARGET_DEVICES += duzun_dm06
+
+define Device/elecom_wrc-1167fs
+  IMAGE_SIZE := 7360k
+  DEVICE_VENDOR := ELECOM
+  DEVICE_MODEL := WRC-1167FS
+  IMAGES += factory.bin
+  IMAGE/factory.bin := $$(sysupgrade_bin) | pad-to 64k | check-size | \
+	xor-image -p 29944A25 -x | elecom-header 00228000 | \
+	elecom-product-header WRC-1167FS
+  DEVICE_PACKAGES := kmod-mt76x2
+endef
+TARGET_DEVICES += elecom_wrc-1167fs
 
 define Device/glinet_gl-mt300n-v2
   IMAGE_SIZE := 16064k
@@ -134,6 +169,14 @@ define Device/hilink_hlk-7628n
   DEVICE_MODEL := HLK-7628N
 endef
 TARGET_DEVICES += hilink_hlk-7628n
+
+define Device/hilink_hlk-7688a
+  IMAGE_SIZE := 32448k
+  DEVICE_VENDOR := Hi-Link
+  DEVICE_MODEL := HLK-7688A
+  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-usb-ledtrig-usbport
+endef
+TARGET_DEVICES += hilink_hlk-7688a
 
 define Device/hiwifi_hc5661a
   IMAGE_SIZE := 15808k
@@ -232,6 +275,23 @@ define Device/mercury_mac1200r-v2
   SUPPORTED_DEVICES += mac1200rv2
 endef
 TARGET_DEVICES += mercury_mac1200r-v2
+
+define Device/minew_g1-c
+  IMAGE_SIZE := 15744k
+  DEVICE_VENDOR := Minew
+  DEVICE_MODEL := G1-C
+  DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-usb-ledtrig-usbport kmod-usb-serial-cp210x
+  SUPPORTED_DEVICES += minew-g1c
+endef
+TARGET_DEVICES += minew_g1-c
+
+define Device/motorola_mwr03
+  IMAGE_SIZE := 7872k
+  DEVICE_VENDOR := Motorola
+  DEVICE_MODEL := MWR03
+  DEVICE_PACKAGES := kmod-mt76x2
+endef
+TARGET_DEVICES += motorola_mwr03
 
 define Device/netgear_r6020
   $(Device/netgear_sercomm_nor)
@@ -492,7 +552,7 @@ define Device/tplink_tl-mr6400-v4
   TPLINK_HWREV := 0x4
   TPLINK_HWREVADD := 0x4
   DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-usb-ledtrig-usbport \
-	kmod-usb-serial kmod-usb-serial-option kmod-usb-net-qmi-wwan uqmi
+	kmod-usb-serial-option kmod-usb-net-qmi-wwan uqmi
   IMAGES := sysupgrade.bin tftp-recovery.bin
   IMAGE/tftp-recovery.bin := pad-extra 128k | $$(IMAGE/factory.bin)
 endef
@@ -508,7 +568,7 @@ define Device/tplink_tl-mr6400-v5
   TPLINK_HWREV := 0x5
   TPLINK_HWREVADD := 0x5
   DEVICE_PACKAGES := kmod-usb2 kmod-usb-ohci kmod-usb-ledtrig-usbport \
-	kmod-usb-serial kmod-usb-serial-option kmod-usb-net-qmi-wwan uqmi
+	kmod-usb-serial-option kmod-usb-net-qmi-wwan uqmi
   IMAGES := sysupgrade.bin tftp-recovery.bin
   IMAGE/tftp-recovery.bin := pad-extra 128k | $$(IMAGE/factory.bin)
 endef
@@ -697,6 +757,16 @@ define Device/wavlink_wl-wn577a2
   DEVICE_PACKAGES := kmod-mt76x0e
 endef
 TARGET_DEVICES += wavlink_wl-wn577a2
+
+define Device/wavlink_wl-wn578a2
+  IMAGE_SIZE := 7872k
+  DEVICE_VENDOR := Wavlink
+  DEVICE_MODEL := WL-WN578A2
+  DEVICE_ALT0_VENDOR := SilverCrest
+  DEVICE_ALT0_MODEL := SWV 733 A2
+  DEVICE_PACKAGES := kmod-mt76x0e
+endef
+TARGET_DEVICES += wavlink_wl-wn578a2
 
 define Device/widora_neo-16m
   IMAGE_SIZE := 16064k

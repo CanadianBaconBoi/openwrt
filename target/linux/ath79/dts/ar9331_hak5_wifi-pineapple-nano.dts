@@ -14,7 +14,6 @@
 		led-boot = &led_system;
 		led-failsafe = &led_system;
 		led-upgrade = &led_system;
-		serial0 = &uart;
 	};
 
 	gpio-export {
@@ -63,7 +62,8 @@
 &eth0 {
 	status = "okay";
 
-	mtd-mac-address = <&art 0x6>;
+	nvmem-cells = <&macaddr_art_6>;
+	nvmem-cell-names = "mac-address";
 };
 
 &eth1 {
@@ -107,10 +107,6 @@
 	};
 };
 
-&uart {
-	status = "okay";
-};
-
 &usb {
 	status = "okay";
 };
@@ -123,4 +119,14 @@
 	status = "okay";
 
 	mtd-cal-data = <&art 0x1000>;
+};
+
+&art {
+	compatible = "nvmem-cells";
+	#address-cells = <1>;
+	#size-cells = <1>;
+
+	macaddr_art_6: macaddr@6 {
+		reg = <0x6 0x6>;
+	};
 };

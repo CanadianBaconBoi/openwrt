@@ -1,9 +1,7 @@
+# SPDX-License-Identifier: GPL-2.0-only
 #
 # Copyright (C) 2008-2011 OpenWrt.org
-#
-# This is free software, licensed under the GNU General Public License v2.
-# See /LICENSE for more information.
-#
+
 include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/image.mk
 
@@ -33,26 +31,6 @@ KERNEL_DTB = kernel-bin | append-dtb | lzma
 define Build/edimax-header
 	$(STAGING_DIR_HOST)/bin/mkedimaximg -i $@ -o $@.new $(1)
 	@mv $@.new $@
-endef
-
-define Build/elx-header
-	$(eval hw_id=$(word 1,$(1)))
-	$(eval xor_pattern=$(word 2,$(1)))
-	( \
-		echo -ne "\x00\x00\x00\x00\x00\x00\x00\x03" | \
-			dd bs=42 count=1 conv=sync; \
-		hw_id="$(hw_id)"; \
-		echo -ne "\x$${hw_id:0:2}\x$${hw_id:2:2}\x$${hw_id:4:2}\x$${hw_id:6:2}" | \
-			dd bs=20 count=1 conv=sync; \
-		echo -ne "$$(printf '%08x' $$(stat -c%s $@) | fold -s2 | xargs -I {} echo \\x{} | tr -d '\n')" | \
-			dd bs=8 count=1 conv=sync; \
-		echo -ne "$$($(STAGING_DIR_HOST)/bin/mkhash md5 $@ | fold -s2 | xargs -I {} echo \\x{} | tr -d '\n')" | \
-			dd bs=58 count=1 conv=sync; \
-	) > $(KDIR)/tmp/$(DEVICE_NAME).header
-	$(call Build/xor-image,-p $(xor_pattern) -x)
-	cat $(KDIR)/tmp/$(DEVICE_NAME).header $@ > $@.new
-	mv $@.new $@
-	rm -rf $(KDIR)/tmp/$(DEVICE_NAME).header
 endef
 
 define Build/jcg-header
@@ -113,7 +91,7 @@ endef
 
 define Build/netis-tail
 	echo -n $(1) >> $@
-	echo -n $(UIMAGE_NAME)-yun | $(STAGING_DIR_HOST)/bin/mkhash md5 | \
+	echo -n $(UIMAGE_NAME)-yun | $(MKHASH) md5 | \
 		sed 's/../\\\\x&/g' | xargs echo -ne >> $@
 endef
 
@@ -188,7 +166,7 @@ define Device/Default
   IMAGES := sysupgrade.bin
   COMPILE :=
   sysupgrade_bin := append-kernel | append-rootfs | pad-rootfs
-  IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | append-metadata | check-size
+  IMAGE/sysupgrade.bin := append-kernel | append-rootfs | pad-rootfs | check-size | append-metadata
 endef
 
 define Device/netgear_sercomm_nor
@@ -197,13 +175,14 @@ define Device/netgear_sercomm_nor
   IMAGES += factory.img
   IMAGE/default := append-kernel | pad-to $$$$(BLOCKSIZE) | append-rootfs | \
 	pad-rootfs
-  IMAGE/sysupgrade.bin := $$(IMAGE/default) | append-metadata | check-size
+  IMAGE/sysupgrade.bin := $$(IMAGE/default) | check-size | append-metadata
   IMAGE/factory.img := pad-extra $$$$(SERCOMM_PAD) | $$(IMAGE/default) | \
 	pad-to $$$$(BLOCKSIZE) | sercom-footer | pad-to 128 | \
 	zip $$$$(SERCOMM_HWNAME).bin | sercom-seal
 endef
 
 define Device/seama
+  BLOCKSIZE := 64k
   SEAMA_MTDBLOCK := 2
   IMAGES += factory.bin
 
@@ -212,7 +191,7 @@ define Device/seama
   # - 36 bytes of META data (4-bytes aligned)
   IMAGE/default := append-kernel | pad-offset $$$$(BLOCKSIZE) 64 | append-rootfs
   IMAGE/sysupgrade.bin := \
-	$$(IMAGE/default) | seama | pad-rootfs | append-metadata | check-size
+	$$(IMAGE/default) | seama | pad-rootfs | check-size | append-metadata
   IMAGE/factory.bin := \
 	$$(IMAGE/default) | pad-rootfs -x 64 | seama | seama-seal | check-size
   SEAMA_SIGNATURE :=

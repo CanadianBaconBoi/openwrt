@@ -9,12 +9,12 @@ include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=ltq-vdsl-vr9
 PKG_VERSION:=4.17.18.6
-PKG_RELEASE:=3
+PKG_RELEASE:=6
 
 PKG_BASE_NAME:=drv_dsl_cpe_api
 PKG_SOURCE:=$(PKG_BASE_NAME)_vrx-$(PKG_VERSION).tar.gz
 PKG_BUILD_DIR:=$(KERNEL_BUILD_DIR)/$(PKG_BASE_NAME)-$(PKG_VERSION)
-PKG_SOURCE_URL:=http://mirror2.openwrt.org/sources
+PKG_SOURCE_URL:=@OPENWRT
 PKG_HASH:=b4966a60653acc49254b168c6cc9c49eb36c54548e763617788aa4f252a29f21
 PKG_LICENSE:=GPL-2.0 BSD-2-Clause
 PKG_LICENSE_FILES:=LICENSE
@@ -42,6 +42,7 @@ define Package/ltq-vdsl-vr9/description
 endef
 
 MAKE_FLAGS += \
+	$(KERNEL_MAKE_FLAGS) \
 	SHELL="$(BASH)"
 
 CONFIGURE_ARGS += --enable-kernel-include="$(LINUX_DIR)/include" \
@@ -54,15 +55,14 @@ CONFIGURE_ARGS += --enable-kernel-include="$(LINUX_DIR)/include" \
 	--enable-ifxos-include="-I$(STAGING_DIR)/usr/include/ifxos" \
 	--enable-driver-include="-I$(STAGING_DIR)/usr/include/vdsl" \
 	--enable-add-drv-cflags="-DMODULE -DINCLUDE_DSL_ATM_PTM_INTERFACE_SUPPORT" \
-	--enable-adsl-led=no \
-	--enable-adsl-mib=no \
-	--enable-dsl-ceoc=no \
 	--enable-linux-26 \
 	--enable-kernelbuild="$(LINUX_DIR)" \
 	--enable-debug-prints=no \
 	ARCH=mips
 
-CONFIGURE_ARGS += --enable-model=full
+CONFIGURE_ARGS += \
+	--enable-model=full \
+	--enable-dsl-ceoc=no
 #CONFIGURE_ARGS += --enable-model=lite
 #CONFIGURE_ARGS += --enable-model=footprint
 #CONFIGURE_ARGS += --enable-model=typical
