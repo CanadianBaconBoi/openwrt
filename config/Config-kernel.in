@@ -24,11 +24,6 @@ config KERNEL_PRINTK
 	bool "Enable support for printk"
 	default y
 
-config KERNEL_CRASHLOG
-	bool "Crash logging"
-	depends on !(arm || powerpc || sparc || TARGET_uml || i386 || x86_64)
-	default y
-
 config KERNEL_SWAP
 	bool "Support for paging of anonymous memory (swap)"
 	default y if !SMALL_FLASH
@@ -348,6 +343,19 @@ config KERNEL_PREEMPT_TRACER
 	  (Note that kernel size and overhead increase with this option
 	  enabled. This option and the irqs-off timing option can be
 	  used together or separately.)
+
+config KERNEL_HIST_TRIGGERS
+	bool "Histogram triggers"
+	depends on KERNEL_FTRACE
+	help
+	  Hist triggers allow one or more arbitrary trace event fields to be
+	  aggregated into hash tables and dumped to stdout by reading a
+	  debugfs/tracefs file. They're useful for gathering quick and dirty
+	  (though precise) summaries of event activity as an initial guide for
+	  further investigation using more advanced tools.
+
+	  Inter-event tracing of quantities such as latencies is also
+	  supported using hist triggers under this option.
 
 config KERNEL_DEBUG_KERNEL
 	bool
@@ -978,6 +986,19 @@ config KERNEL_IP_MROUTE
 	  Multicast routing requires a multicast routing daemon in
 	  addition to kernel support.
 
+if KERNEL_IP_MROUTE
+
+	config KERNEL_IP_MROUTE_MULTIPLE_TABLES
+		def_bool y
+
+	config KERNEL_IP_PIMSM_V1
+		def_bool y
+
+	config KERNEL_IP_PIMSM_V2
+		def_bool y
+
+endif
+
 #
 # IPv6 configuration
 #
@@ -1000,8 +1021,15 @@ if KERNEL_IPV6
 		  Multicast routing requires a multicast routing daemon in
 		  addition to kernel support.
 
-	config KERNEL_IPV6_PIMSM_V2
-		def_bool n
+	if KERNEL_IPV6_MROUTE
+
+		config KERNEL_IPV6_MROUTE_MULTIPLE_TABLES
+			def_bool y
+
+		config KERNEL_IPV6_PIMSM_V2
+			def_bool y
+
+	endif
 
 	config KERNEL_IPV6_SEG6_LWTUNNEL
 		bool "Enable support for lightweight tunnels"
@@ -1013,6 +1041,16 @@ if KERNEL_IPV6
 		def_bool n
 
 endif
+
+#
+# Miscellaneous network configuration
+#
+
+config KERNEL_NET_L3_MASTER_DEV
+	bool "L3 Master device support"
+	help
+	  This module provides glue between core networking code and device
+	  drivers to support L3 master devices like VRF.
 
 #
 # NFS related symbols

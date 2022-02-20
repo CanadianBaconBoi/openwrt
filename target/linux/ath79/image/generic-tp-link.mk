@@ -393,6 +393,17 @@ define Device/tplink_eap225-outdoor-v1
 endef
 TARGET_DEVICES += tplink_eap225-outdoor-v1
 
+define Device/tplink_eap225-v1
+  $(Device/tplink-eap2x5)
+  SOC := qca9563
+  IMAGE_SIZE := 13824k
+  DEVICE_MODEL := EAP225
+  DEVICE_VARIANT := v1
+  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
+  TPLINK_BOARD_ID := EAP225-V1
+endef
+TARGET_DEVICES += tplink_eap225-v1
+
 define Device/tplink_eap225-v3
   $(Device/tplink-eap2x5)
   SOC := qca9563
@@ -775,6 +786,15 @@ define Device/tplink_tl-wr810n-v2
   SUPPORTED_DEVICES += tl-wr810n-v2
 endef
 TARGET_DEVICES += tplink_tl-wr810n-v2
+
+define Device/tplink_tl-wr841hp-v2
+  $(Device/tplink-8mlzma)
+  SOC := ar9344
+  DEVICE_MODEL := TL-WR841HP
+  DEVICE_VARIANT := v2
+  TPLINK_HWID := 0x08411002
+endef
+TARGET_DEVICES += tplink_tl-wr841hp-v2
 
 define Device/tplink_tl-wr841hp-v3
   $(Device/tplink-8mlzma)
