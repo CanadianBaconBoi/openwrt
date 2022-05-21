@@ -298,6 +298,16 @@ define Device/alfa-network_r36a
 endef
 TARGET_DEVICES += alfa-network_r36a
 
+define Device/alfa-network_tube-2hq
+  SOC := qca9531
+  DEVICE_VENDOR := ALFA Network
+  DEVICE_MODEL := Tube-2HQ
+  DEVICE_PACKAGES := rssileds -swconfig
+  IMAGE_SIZE := 15872k
+  SUPPORTED_DEVICES += tube-2hq
+endef
+TARGET_DEVICES += alfa-network_tube-2hq
+
 define Device/allnet_all-wap02860ac
   $(Device/senao_loader_okli)
   SOC := qca9558
@@ -309,6 +319,41 @@ define Device/allnet_all-wap02860ac
   SENAO_IMGNAME := senao-allwap02860ac
 endef
 TARGET_DEVICES += allnet_all-wap02860ac
+
+define Device/araknis_an-300-ap-i-n
+  $(Device/senao_loader_okli)
+  SOC := ar9344
+  DEVICE_VENDOR := Araknis
+  DEVICE_MODEL := AN-300-AP-I-N
+  IMAGE_SIZE := 12096k
+  LOADER_FLASH_OFFS := 0x220000
+  SENAO_IMGNAME := senao-an300
+endef
+TARGET_DEVICES += araknis_an-300-ap-i-n
+
+define Device/araknis_an-500-ap-i-ac
+  $(Device/senao_loader_okli)
+  SOC := qca9557
+  DEVICE_VENDOR := Araknis
+  DEVICE_MODEL := AN-500-AP-I-AC
+  DEVICE_PACKAGES := ath10k-firmware-qca988x-ct kmod-ath10k-ct
+  IMAGE_SIZE := 11584k
+  LOADER_FLASH_OFFS := 0x220000
+  SENAO_IMGNAME := senao-generic-v1-an500
+endef
+TARGET_DEVICES += araknis_an-500-ap-i-ac
+
+define Device/araknis_an-700-ap-i-ac
+  $(Device/senao_loader_okli)
+  SOC := qca9558
+  DEVICE_VENDOR := Araknis
+  DEVICE_MODEL := AN-700-AP-I-AC
+  DEVICE_PACKAGES := ath10k-firmware-qca988x-ct kmod-ath10k-ct
+  IMAGE_SIZE := 11584k
+  LOADER_FLASH_OFFS := 0x220000
+  SENAO_IMGNAME := senao-generic-v1-an700
+endef
+TARGET_DEVICES += araknis_an-700-ap-i-ac
 
 define Device/arduino_yun
   SOC := ar9331
@@ -1204,7 +1249,7 @@ define Device/glinet_6408
   SOC := ar9331
   DEVICE_VENDOR := GL.iNet
   DEVICE_MODEL := 6408
-  DEVICE_PACKAGES := kmod-usb2
+  DEVICE_PACKAGES := kmod-usb-chipidea2
   IMAGE_SIZE := 8000k
   TPLINK_HWID := 0x08000001
   IMAGES := sysupgrade.bin
@@ -1217,7 +1262,7 @@ define Device/glinet_6416
   SOC := ar9331
   DEVICE_VENDOR := GL.iNet
   DEVICE_MODEL := 6416
-  DEVICE_PACKAGES := kmod-usb2
+  DEVICE_PACKAGES := kmod-usb-chipidea2
   IMAGE_SIZE := 16192k
   TPLINK_HWID := 0x08000001
   IMAGES := sysupgrade.bin
@@ -1341,6 +1386,18 @@ define Device/hak5_wifi-pineapple-nano
   SUPPORTED_DEVICES += wifi-pineapple-nano
 endef
 TARGET_DEVICES += hak5_wifi-pineapple-nano
+
+define Device/hiwifi_hc6361
+  SOC := ar9331
+  DEVICE_VENDOR := HiWiFi
+  DEVICE_MODEL := HC6361
+  DEVICE_PACKAGES := kmod-usb-core kmod-usb2 kmod-usb-chipidea2 kmod-usb-storage \
+	kmod-fs-ext4 kmod-nls-iso8859-1 e2fsprogs
+  BOARDNAME := HiWiFi-HC6361
+  KERNEL := kernel-bin | append-dtb | lzma | uImage lzma | pad-to $$(BLOCKSIZE)
+  IMAGE_SIZE := 16128k
+endef
+TARGET_DEVICES += hiwifi_hc6361
 
 define Device/iodata_etg3-r
   SOC := ar9342
@@ -1596,6 +1653,21 @@ define Device/netgear_ex7300-v2
   DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca9984-ct
 endef
 TARGET_DEVICES += netgear_ex7300-v2
+
+define Device/netgear_wndap360
+  $(Device/netgear_generic)
+  SOC := ar7161
+  DEVICE_MODEL := WNDAP360
+  DEVICE_PACKAGES := kmod-leds-reset kmod-owl-loader
+  IMAGE_SIZE := 7744k
+  BLOCKSIZE := 256k
+  KERNEL := kernel-bin | append-dtb | gzip | uImage gzip
+  KERNEL_INITRAMFS := kernel-bin | append-dtb | uImage none
+  IMAGES := sysupgrade.bin
+  IMAGE/sysupgrade.bin := append-kernel | pad-to 64k | append-rootfs | pad-rootfs | \
+	check-size | append-metadata
+endef
+TARGET_DEVICES += netgear_wndap360
 
 define Device/netgear_wndr3x00
   $(Device/netgear_generic)
@@ -2309,6 +2381,42 @@ define Device/sitecom_wlr-8100
 endef
 TARGET_DEVICES += sitecom_wlr-8100
 
+define Device/sophos_ap55
+  SOC := qca9558
+  DEVICE_VENDOR := Sophos
+  DEVICE_MODEL := AP55
+  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct kmod-usb2
+  IMAGE_SIZE := 15936k
+endef
+TARGET_DEVICES += sophos_ap55
+
+define Device/sophos_ap55c
+  SOC := qca9558
+  DEVICE_VENDOR := Sophos
+  DEVICE_MODEL := AP55C
+  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
+  IMAGE_SIZE := 15936k
+endef
+TARGET_DEVICES += sophos_ap55c
+
+define Device/sophos_ap100
+  SOC := qca9558
+  DEVICE_VENDOR := Sophos
+  DEVICE_MODEL := AP100
+  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct kmod-usb2
+  IMAGE_SIZE := 15936k
+endef
+TARGET_DEVICES += sophos_ap100
+
+define Device/sophos_ap100c
+  SOC := qca9558
+  DEVICE_VENDOR := Sophos
+  DEVICE_MODEL := AP100C
+  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
+  IMAGE_SIZE := 15936k
+endef
+TARGET_DEVICES += sophos_ap100c
+
 define Device/telco_t1
   SOC := qca9531
   DEVICE_VENDOR := Telco
@@ -2482,6 +2590,27 @@ define Device/yuncore_a782
   IMAGE/tftp.bin := $$(IMAGE/sysupgrade.bin) | yuncore-tftp-header-16m
 endef
 TARGET_DEVICES += yuncore_a782
+
+define Device/yuncore_a930
+  SOC := qca9533
+  DEVICE_VENDOR := YunCore
+  DEVICE_MODEL := A930
+  IMAGE_SIZE := 16000k
+  IMAGES += tftp.bin
+  IMAGE/tftp.bin := $$(IMAGE/sysupgrade.bin) | yuncore-tftp-header-16m
+endef
+TARGET_DEVICES += yuncore_a930
+
+define Device/yuncore_xd3200
+  SOC := qca9563
+  DEVICE_VENDOR := YunCore
+  DEVICE_MODEL := XD3200
+  DEVICE_PACKAGES := kmod-ath10k-ct ath10k-firmware-qca988x-ct
+  IMAGE_SIZE := 16000k
+  IMAGES += tftp.bin
+  IMAGE/tftp.bin := $$(IMAGE/sysupgrade.bin) | yuncore-tftp-header-16m
+endef
+TARGET_DEVICES += yuncore_xd3200
 
 define Device/yuncore_xd4200
   SOC := qca9563

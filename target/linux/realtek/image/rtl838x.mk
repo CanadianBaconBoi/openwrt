@@ -45,6 +45,15 @@ define Device/inaba_aml2-17gp
 endef
 TARGET_DEVICES += inaba_aml2-17gp
 
+define Device/iodata_bsh-g24mb
+  SOC := rtl8382
+  IMAGE_SIZE := 13696k
+  DEVICE_VENDOR := I-O DATA
+  DEVICE_MODEL := BSH-G24MB
+  UIMAGE_MAGIC := 0x83800013
+endef
+TARGET_DEVICES += iodata_bsh-g24mb
+
 define Device/netgear_gs108t-v3
   $(Device/netgear_nge)
   DEVICE_MODEL := GS108T
@@ -76,6 +85,16 @@ define Device/netgear_gs310tp-v1
 endef
 TARGET_DEVICES += netgear_gs310tp-v1
 
+define Device/panasonic_m8eg-pn28080k
+  SOC := rtl8380
+  IMAGE_SIZE := 16384k
+  DEVICE_VENDOR := Panasonic
+  DEVICE_MODEL := Switch-M8eG
+  DEVICE_VARIANT := PN28080K
+  DEVICE_PACKAGES := kmod-i2c-mux-pca954x
+endef
+TARGET_DEVICES += panasonic_m8eg-pn28080k
+
 define Device/zyxel_gs1900
   SOC := rtl8380
   IMAGE_SIZE := 6976k
@@ -91,6 +110,14 @@ define Device/zyxel_gs1900-10hp
   ZYXEL_VERS := AAZI
 endef
 TARGET_DEVICES += zyxel_gs1900-10hp
+
+define Device/zyxel_gs1900-16
+  $(Device/zyxel_gs1900)
+  SOC := rtl8382
+  DEVICE_MODEL := GS1900-16
+  ZYXEL_VERS := AAHJ
+endef
+TARGET_DEVICES += zyxel_gs1900-16
 
 define Device/zyxel_gs1900-8
   $(Device/zyxel_gs1900)
@@ -116,6 +143,24 @@ define Device/zyxel_gs1900-8hp-v2
   DEVICE_PACKAGES += lua-rs232
 endef
 TARGET_DEVICES += zyxel_gs1900-8hp-v2
+
+define Device/zyxel_gs1900-24-v1
+  $(Device/zyxel_gs1900)
+  SOC := rtl8382
+  DEVICE_MODEL := GS1900-24
+  DEVICE_VARIANT := v1
+  ZYXEL_VERS := AAHL
+endef
+TARGET_DEVICES += zyxel_gs1900-24-v1
+
+define Device/zyxel_gs1900-24hp-v1
+  $(Device/zyxel_gs1900)
+  SOC := rtl8382
+  DEVICE_MODEL := GS1900-24HP
+  DEVICE_VARIANT := v1
+  ZYXEL_VERS := AAHM
+endef
+TARGET_DEVICES += zyxel_gs1900-24hp-v1
 
 define Device/zyxel_gs1900-24hp-v2
   $(Device/zyxel_gs1900)

@@ -1,6 +1,13 @@
 DEVICE_VARS += NETGEAR_BOARD_ID NETGEAR_HW_ID
 DEVICE_VARS += TPLINK_BOARD_ID
 
+define Device/kernel-size-migration
+  DEVICE_COMPAT_VERSION := 2.0
+  DEVICE_COMPAT_MESSAGE := *** Kernel partition size has changed from earlier \
+	versions. You need to sysupgrade with the OpenWrt factory image and \
+	use the force flag when image check fails. Settings will be lost. ***
+endef
+
 define Build/buffalo-rootfs-cksum
 	( \
 		echo -ne "\x$$(od -A n -t u1 $@ | tr -s ' ' '\n' | \
@@ -57,6 +64,19 @@ define Device/ZyXELImage
 		pad-to $$$$(BLOCKSIZE) | sysupgrade-tar rootfs=$$$$@ | \
 		append-metadata
 endef
+
+define Device/arris_tr4400-v2
+	$(call Device/LegacyImage)
+	DEVICE_VENDOR := Arris
+	DEVICE_MODEL := TR4400
+	DEVICE_VARIANT := v2
+	SOC := qcom-ipq8065
+	BLOCKSIZE := 128k
+	PAGESIZE := 2048
+	DEVICE_PACKAGES := ath10k-firmware-qca9984-ct ath10k-firmware-qca99x0-ct
+	KERNEL_IN_UBI := 1
+endef
+TARGET_DEVICES += arris_tr4400-v2
 
 define Device/askey_rt4230w-rev6
 	$(call Device/LegacyImage)
@@ -128,13 +148,14 @@ TARGET_DEVICES += edgecore_ecw5410
 
 define Device/linksys_ea7500-v1
 	$(call Device/LegacyImage)
+	$(Device/kernel-size-migration)
 	DEVICE_VENDOR := Linksys
 	DEVICE_MODEL := EA7500
 	DEVICE_VARIANT := v1
 	SOC := qcom-ipq8064
 	PAGESIZE := 2048
 	BLOCKSIZE := 128k
-	KERNEL_SIZE := 3072k
+	KERNEL_SIZE := 4096k
 	KERNEL = kernel-bin | append-dtb | uImage none | \
 		append-uImage-fakehdr filesystem
 	UBINIZE_OPTS := -E 5
@@ -142,18 +163,18 @@ define Device/linksys_ea7500-v1
 	IMAGE/factory.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | \
 		append-ubi | pad-to $$$$(PAGESIZE)
 	DEVICE_PACKAGES := ath10k-firmware-qca99x0-ct
-	DEFAULT := n
 endef
 TARGET_DEVICES += linksys_ea7500-v1
 
 define Device/linksys_ea8500
 	$(call Device/LegacyImage)
+	$(Device/kernel-size-migration)
 	DEVICE_VENDOR := Linksys
 	DEVICE_MODEL := EA8500
 	SOC := qcom-ipq8064
 	PAGESIZE := 2048
 	BLOCKSIZE := 128k
-	KERNEL_SIZE := 3072k
+	KERNEL_SIZE := 4096k
 	KERNEL = kernel-bin | append-dtb | uImage none | \
 		append-uImage-fakehdr filesystem
 	BOARD_NAME := ea8500
@@ -163,7 +184,6 @@ define Device/linksys_ea8500
 	IMAGE/factory.bin := append-kernel | pad-to $$$$(KERNEL_SIZE) | \
 		append-ubi
 	DEVICE_PACKAGES := ath10k-firmware-qca99x0-ct
-	DEFAULT := n
 endef
 TARGET_DEVICES += linksys_ea8500
 
@@ -227,7 +247,7 @@ define Device/nec_wg2600hp3
 	DEVICE_PACKAGES := -kmod-ata-ahci -kmod-ata-ahci-platform \
 		-kmod-usb-ohci -kmod-usb2 -kmod-usb-ledtrig-usbport \
 		-kmod-usb-phy-qcom-dwc3 -kmod-usb3 -kmod-usb-dwc3-qcom \
-		ath10k-firmware-qca9984-ct ipq-wifi-nec_wg2600hp3
+		ath10k-firmware-qca9984-ct
 endef
 TARGET_DEVICES += nec_wg2600hp3
 
@@ -297,7 +317,7 @@ define Device/netgear_r7800
 	PAGESIZE := 2048
 	BOARD_NAME := r7800
 	SUPPORTED_DEVICES += r7800
-	DEVICE_PACKAGES := ath10k-firmware-qca9984-ct
+	DEVICE_PACKAGES := ath10k-firmware-qca9984-ct kmod-ramoops
 endef
 TARGET_DEVICES += netgear_r7800
 
@@ -311,7 +331,7 @@ define Device/netgear_xr500
 	NETGEAR_HW_ID := 29764958+0+256+512+4x4+4x4+cascade
 	BLOCKSIZE := 128k
 	PAGESIZE := 2048
-	DEVICE_PACKAGES := ath10k-firmware-qca9984-ct
+	DEVICE_PACKAGES := ath10k-firmware-qca9984-ct kmod-ramoops
 endef
 TARGET_DEVICES += netgear_xr500
 
